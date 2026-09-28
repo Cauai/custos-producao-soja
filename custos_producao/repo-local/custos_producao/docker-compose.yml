@@ -1,0 +1,47 @@
+# -----------------------------------------------------------------------------
+# Ambiente do projeto Custos Soja — banco em arquitetura medalhão (bronze/silver/gold)
+# Sobe um Postgres local, portátil. Para levar para outra máquina:
+#   git clone <repo>  ->  cp .env.example .env  ->  docker compose up -d
+# -----------------------------------------------------------------------------
+services:
+  postgres:
+    image: postgres:16
+    container_name: custos_soja_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      # host:container — 5433 no host evita conflito com um Postgres já instalado
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      # Persiste os dados do banco entre reinícios do container
+      - pgdata:/var/lib/postgresql/data
+      # Roda automaticamente na PRIMEIRA subida do banco (cria os schemas)
+      - ./sql/00_init_schemas.sql:/docker-entrypoint-initdb.d/00_init_schemas.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Interface web de administração — acessível em http://localhost:8080
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: custos_soja_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "${PGADMIN_PORT:-8080}:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  pgdata:
+  pgadmin_data:

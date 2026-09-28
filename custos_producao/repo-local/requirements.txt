@@ -1,0 +1,37 @@
+# Ingestão e pipeline
+xlrd==2.0.1
+openpyxl==3.1.5        # leitura/escrita de .xlsx (gera o Excel de classificação)            # leitura de .xls antigo (formato BIFF)
+pandas==2.2.3
+SQLAlchemy==2.0.36
+psycopg2-binary==2.9.10
+python-dotenv==1.0.1
+
+
+
+# Notebook (VS Code + Jupyter)
+ipykernel==6.29.5
+notebook==7.3.1
+
+# Dashboard (fase posterior)
+streamlit==1.40.2
+plotly==5.24.1
+
+
+#IA
+
+ollama ==0.3.3
+
+streamlit==1.40.2
+pandas==2.2.3
+plotly==5.24.1
+pyarrow==17.0.0
+
+
+
+
+
+
+
+
+
+
